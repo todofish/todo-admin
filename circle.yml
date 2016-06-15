@@ -1,0 +1,21 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - pip install awscli
+  override:
+    - docker build -t todo-admin .
+
+test:
+  override:
+    - /bin/true
+
+deployment:
+  builds:
+    branch: master
+    commands:
+      - $(aws ecr get-login)
+      - docker tag todo-admin:latest $DOCKER_REPO:build-$CIRCLE_BUILD_NUM
+      - docker push $DOCKER_REPO:build-$CIRCLE_BUILD_NUM
